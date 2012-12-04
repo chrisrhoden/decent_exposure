@@ -11,7 +11,8 @@ describe DecentExposure::ActiveRecordWithEagerAttributesStrategy do
     let(:config) { stub(:options => {}) }
     let(:controller_class) { stub(:_decent_configurations => Hash.new(config)) }
     let(:controller) { stub(:params => params, :request => request, :class => controller_class) }
-    let(:strategy) { DecentExposure::ActiveRecordWithEagerAttributesStrategy.new(controller, inflector) }
+    let(:options) { {} }
+    let(:strategy) { DecentExposure::ActiveRecordWithEagerAttributesStrategy.new(controller, inflector, options) }
 
     subject { strategy.resource }
 
@@ -94,6 +95,21 @@ describe DecentExposure::ActiveRecordWithEagerAttributesStrategy do
       it "sends a empty hash to attributes=" do
         model.should_receive(:new).and_return(instance)
         instance.should_receive(:attributes=).with({})
+        should == instance
+      end
+    end
+
+    context "when a custom params method is provided" do
+      let(:options) do
+        { :params => :custom_params }
+      end
+      let(:instance) { stub }
+      let(:plural) { false }
+
+      it "calls the custom method on the controller" do
+        model.stub(:new => instance)
+        instance.should_receive(:attributes=).with({ "name" => "Timmy" })
+        controller.should_receive(:custom_params).and_return({ "name" => "Timmy" })
         should == instance
       end
     end

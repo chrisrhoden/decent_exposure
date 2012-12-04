@@ -10,7 +10,7 @@ module DecentExposure
     end
 
     def attributes
-      params[inflector.singular] || {}
+      custom_params || params[inflector.singular] || {}
     end
 
     def assign_attributes?
@@ -26,6 +26,12 @@ module DecentExposure
       super.tap do |r|
         r.attributes = attributes if assign_attributes?
       end
+    end
+
+    private
+    def custom_params
+      return @custom_params if defined?(@custom_params)
+      @custom_params = controller.send(options[:params]) if options[:params]
     end
   end
 end
