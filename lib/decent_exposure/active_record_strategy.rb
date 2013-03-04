@@ -37,6 +37,14 @@ module DecentExposure
       options[:finder] || :find
     end
 
+    def builder
+      options[:builder] || default_builder
+    end
+
+    def default_builder
+      scope.respond_to? :build ? :build : :new
+    end
+
     def collection_resource
       scope.send(scope_method)
     end
@@ -53,7 +61,7 @@ module DecentExposure
       if id
         scope.send(finder, id)
       else
-        scope.new
+        scope.send(builder)
       end
     end
 
